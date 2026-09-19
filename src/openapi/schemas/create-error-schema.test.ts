@@ -212,18 +212,12 @@ describe("create-error-schema", () => {
   });
 
   it("ensures example shape has no extra properties", () => {
-    zodToOpenAPIRegistry.clear();
-    const schema = z.object({
+    const errorSchema = createErrorSchema(z.object({
       name: z.string(),
       age: z.number(),
-    });
-    createErrorSchema(schema);
-
-    const metadata = [...zodToOpenAPIRegistry._map.values()][1];
-    expect(metadata).toBeDefined();
-    expect(metadata.example).toBeDefined();
-
-    const { example } = metadata;
+    }));
+    const example = zodToOpenAPIRegistry.get(errorSchema.shape.error)?.example;
+    expect(example).toBeDefined();
 
     expect(example).toHaveProperty("name");
     expect(example).toHaveProperty("issues");
@@ -242,15 +236,9 @@ describe("create-error-schema", () => {
   });
 
   it("ensures example shape is array for array schemas", () => {
-    zodToOpenAPIRegistry.clear();
-    const schema = z.array(z.string());
-    createErrorSchema(schema);
-
-    const metadata = [...zodToOpenAPIRegistry._map.values()][1];
-    expect(metadata).toBeDefined();
-    expect(metadata.example).toBeDefined();
-
-    const { example } = metadata;
+    const errorSchema = createErrorSchema(z.array(z.string()));
+    const example = zodToOpenAPIRegistry.get(errorSchema.shape.error)?.example;
+    expect(example).toBeDefined();
 
     expect(example).toHaveProperty("name");
     expect(example).toHaveProperty("issues");
